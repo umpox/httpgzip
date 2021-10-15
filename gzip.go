@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"log"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -39,6 +40,9 @@ func ServeContent(fs *fileServer, w http.ResponseWriter, req *http.Request, name
 		http.ServeContent(w, req, name, modTime, content)
 		return
 	}
+
+	headers := httpguts.HeaderValuesContainsToken(req.Header["Accept-Encoding"], "br")
+	log.Println("Has BR header:", headers)
 
 	// If request accepts Brotli, look for a precompressed variant of this file.
 	// We do not attempt to dynamically compress Brotli as it is not performant.
